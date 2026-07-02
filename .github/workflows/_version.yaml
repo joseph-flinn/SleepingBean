@@ -74,9 +74,9 @@ jobs:
             echo "  latest_patch_version: $latest_patch_version"
 
             if [[ "$VERSION_TYPE" == "major" ]]; then
-              next_version="$(($latest_major_version + 1)).${latest_minor_version}.${latest_patch_version}"
+              next_version="$(($latest_major_version + 1)).0.0"
             elif [[ "$VERSION_TYPE" == "minor" ]]; then
-              next_version="${latest_major_version}.$(($latest_minor_version + 1)).${latest_patch_version}"
+              next_version="${latest_major_version}.$(($latest_minor_version + 1)).0"
             elif [[ "$VERSION_TYPE" == "patch" ]]; then
               next_version="${latest_major_version}.${latest_minor_version}.$(($latest_patch_version + 1))"
             else
