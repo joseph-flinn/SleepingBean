@@ -4,7 +4,7 @@
     "slug": "OpenSleepSounds",
     "version": "0.0.0",
     "orientation": "portrait",
-    "icon": "./assets/app-icon-300.png",
+    "icon": "./assets/app-icon-adaptive.png",
     "userInterfaceStyle": "dark",
     "splash": {
       "image": "./assets/app-icon-512.png",
@@ -22,14 +22,14 @@
     "android": {
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
-        "foregroundImage": "./assets/app-icon-300.png",
-        "backgroundImage": "./assets/app-icon-300.png",
-        "monochromeImage": "./assets/app-icon-300.png"
+        "foregroundImage": "./assets/app-icon-adaptive.png",
+        "backgroundImage": "./assets/app-icon-adaptive.png",
+        "monochromeImage": "./assets/app-icon-adaptive.png"
       },
       "package": "com.workspace"
     },
     "web": {
-      "favicon": "./assets/app-icon-300.png"
+      "favicon": "./assets/app-icon-512.png"
     },
     "plugins": [
       [
