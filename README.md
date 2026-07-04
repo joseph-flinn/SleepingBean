@@ -2,6 +2,12 @@
 
 I hate ads and the sleep app that I am using is crashing at 2am waking me up...
 
+SleepingBean is a simple mobile app for Android phones (installed through Obtainium). It features a
+single 10s track of pink noise that repeats indefinitely.
+
+![Play screen](./docs/screenshot-play.png)
+![Pause screen](./docs/screenshot-pause.png)
+
 ## Development
 ### Approach
 
