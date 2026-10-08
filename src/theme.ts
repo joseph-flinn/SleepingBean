@@ -19,6 +19,8 @@ export const lightTheme = {
   shadowElevation: '0 20px 40px rgba(0, 0, 0, 0.4)',
 };
 
+export type AppTheme = typeof lightTheme;
+
 export const darkTheme = {
   ...lightTheme,
   colors: {

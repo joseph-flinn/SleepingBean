@@ -1,115 +1,78 @@
-import React from 'react';
-import { View, Pressable, Text, StyleSheet, ViewStyle } from 'react-native';
-import { useAudioPlayer, useAudioPlayerStatus, setAudioModeAsync } from 'expo-audio';
+import { View, Text, StyleSheet, useColorScheme } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { IconButton } from '../components/IconButton';
+import { PlayIcon, PauseIcon } from '../components/AudioIcons';
+import { useSleepAudio } from '../hooks/useSleepAudio';
 
-import { useThemedStyles } from '../hooks/useThemedStyles';
-import { useTheme } from '../ThemeContext';
-import { IconButton } from './IconButton';
-import { PlayIcon, PauseIcon } from './AudioIcons';
-import { AppNameLogo } from './AppNameLogo';
-
-//const AUDIO_FILE = require('../../assets/audio/smooth-brown-noise-10s.wav');
-const AUDIO_FILE = require('../../assets/audio/pink-noise-10s.wav');
-
-const createStyles = (theme) =>
-  StyleSheet.create({
-    container: {
-      padding: 20,
-      width: '95%',
-      height: '95%',
-      alignItems: 'center',
-      justifyContent: 'center',
-      backgroundColor: theme.colors.card,
-    },
-    buttons: {
-      gap: 10,
-    }
-  });
-
-/**
- * AudioControl - Displays audio playback controls
- * Centered using flexbox centering in App.tsx container
- */
-export const AudioControl = () => {
-  const { theme } = useTheme(); // Only to set icon color
-  const styles = useThemedStyles(createStyles);
+export function AudioControl() {
+  const { playing, toggle } = useSleepAudio();
+  const scheme = useColorScheme();
   const insets = useSafeAreaInsets();
-  const player = useAudioPlayer(AUDIO_FILE);
-  const status = useAudioPlayerStatus(player);
 
-  React.useEffect(() => {
-    player.loop = true;
-  }, [player]);
-
-  React.useEffect(() => {
-    const configureAudioSession = async () => {
-      try {
-        await setAudioModeAsync({
-          playsInSilentMode: true,
-          shouldPlayInBackground: true,
-          interruptionMode: 'doNotMix',
-        });
-      } catch (error) {
-        console.error('Error configuring audio session:', error);
-      }
-    };
-
-    configureAudioSession();
-  }, []);
-
-  const handlePlay = () => {
-    player.seekTo(0);
-    player.setActiveForLockScreen(true, {
-      title: "Creek",
-      artist: "JF",
-      albumTitle: "Nature"
-    });
-    player.play();
-  };
-
-  const handleToggle = () => {
-    if (status.playing) {
-      player.pause();
-    } else {
-      handlePlay();
-    }
-  };
+  const isDark = scheme === 'dark';
+  const textColor = isDark ? '#EAD2AC' : '#03110d';
+  const mutedTextColor = isDark ? 'rgba(234, 210, 172, 0.55)' : 'rgba(3, 17, 13, 0.55)';
+  const iconColor = isDark ? '#D8B589' : '#03110d';
+  const borderColor = isDark ? 'rgba(218, 181, 137, 0.35)' : 'rgba(3, 17, 13, 0.2)';
 
   return (
-    <View style={styles.container}>
-      <View
-        style={{
-          position: 'absolute',
-          top: insets.top,
-          left: 0,
-          right: 0,
-          alignItems: 'center',
-          padding: 10,
-        }}
-      >
-        <AppNameLogo
-          width={1000}
-          color={theme.colors.text}
-        />
-      </View>
-      <View style={styles.buttons}>
-        <IconButton
-          onPress={handleToggle}
-          size={200}
-          icon={ status.playing ? (
-            <PauseIcon
-              size={200}
-              color={theme.colors.text}
-            />
-          ) : (
-            <PlayIcon
-              size={200}
-              color={theme.colors.text}
-            />
-          )}
-        />
+    <View style={[styles.container, { paddingBottom: insets.bottom + 16 }]}>
+      <View style={styles.row}>
+        <View style={styles.textContainer}>
+          <Text style={[styles.title, { color: textColor }]}>Sleep Audio</Text>
+          <Text style={[styles.subtitle, { color: mutedTextColor }]}>
+            {playing ? 'Playing' : 'Paused'}
+          </Text>
+        </View>
+
+        <View
+          style={[styles.buttonWrapper, { borderColor }]}
+        >
+          <IconButton
+            testID="audio-play-button"
+            onPress={toggle}
+            icon={playing ? <PauseIcon color={iconColor} /> : <PlayIcon color={iconColor} />}
+            accessibilityLabel={playing ? 'Pause audio' : 'Play audio'}
+            accessibilityRole="button"
+          />
+        </View>
       </View>
     </View>
   );
-};
+}
+
+export default AudioControl;
+
+const styles = StyleSheet.create({
+  container: {
+    paddingHorizontal: 16,
+    paddingTop: 16,
+  },
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: 16,
+    borderRadius: 16,
+  },
+  textContainer: {
+    flex: 1,
+    paddingRight: 12,
+  },
+  title: {
+    fontSize: 18,
+    fontWeight: '600',
+    marginBottom: 4,
+  },
+  subtitle: {
+    fontSize: 13,
+  },
+  buttonWrapper: {
+    width: 52,
+    height: 52,
+    borderRadius: 26,
+    borderWidth: StyleSheet.hairlineWidth,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+});

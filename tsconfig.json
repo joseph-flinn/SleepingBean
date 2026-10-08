@@ -1,4 +1,16 @@
 {
-  "compilerOptions": {},
+  "compilerOptions": {
+    "types": ["jest", "node"],
+    // npm nests expo-modules-core under expo/, so type declarations that import
+    // it from other packages (e.g. expo-audio's AudioPlayer base class) cannot
+    // resolve it. Both locations are listed so the mapping survives a future
+    // hoist; this only affects `tsc`, never Metro.
+    "paths": {
+      "expo-modules-core": [
+        "./node_modules/expo-modules-core",
+        "./node_modules/expo/node_modules/expo-modules-core"
+      ]
+    }
+  },
   "extends": "expo/tsconfig.base"
 }
