@@ -6,11 +6,6 @@
     "orientation": "portrait",
     "icon": "./assets/app-icon-adaptive.png",
     "userInterfaceStyle": "dark",
-    "splash": {
-      "image": "./assets/app-icon-512.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#E6F4FE"
-    },
     "ios": {
       "supportsTablet": true,
       "infoPlist": {
@@ -33,11 +28,20 @@
     },
     "plugins": [
       [
+        "expo-splash-screen",
+        {
+          "image": "./assets/app-icon-512.png",
+          "resizeMode": "contain",
+          "backgroundColor": "#E6F4FE"
+        }
+      ],
+      [
         "expo-audio",
         {
           "enableBackgroundPlayback": true
         }
-      ]
+      ],
+      "expo-splash-screen"
     ]
   }
 }

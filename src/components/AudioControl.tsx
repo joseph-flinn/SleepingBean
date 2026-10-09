@@ -11,7 +11,7 @@ export function AudioControl() {
   const { theme } = useTheme();
   const iconSize = width / 2;
 
-  const iconColor = theme.colors.textMuted;
+  const iconColor = theme.colors.textSecondary;
   const logoColor = theme.colors.textSecondary;
 
   return (
