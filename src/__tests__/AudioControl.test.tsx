@@ -1,77 +1,79 @@
-import { render, screen } from '@testing-library/react-native';
-import React from 'react';
-import { AudioControl } from '../AudioControl';
-import { PlayIcon } from '../icons/PlayIcon';
-import { PauseIcon } from '../icons/PauseIcon';
+/**
+ * `AudioControl` is now a thin view over `useSleepAudio()` (design D2), so these
+ * tests assert the wiring: the icon/subtitle follow the player status and a tap
+ * reaches the mocked player. The icon and the `accessibilityLabel` are driven by
+ * the same `playing` flag, so the label is the observable for the icon swap
+ * (`test-renderer` only exposes host elements, not component types).
+ *
+ * `expo-audio` uses the centralized mock in `<root>/__mocks__/expo-audio.ts`,
+ * registered by the hoisted `jest.mock` below.
+ */
+import { act, render, screen, userEvent } from '@testing-library/react-native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
-describe('AudioControl', () => {
-  it('renders without crashing', () => {
-    const { toJSON } = render(<AudioControl />);
-    expect(toJSON()).toMatchSnapshot();
+import AudioControl from '../components/AudioControl';
+import { audioMock } from './audio-mock';
+
+jest.mock('expo-audio');
+
+async function renderControl() {
+  return render(
+    <SafeAreaProvider>
+      <AudioControl />
+    </SafeAreaProvider>,
+  );
+}
+
+const playButton = () => screen.getByTestId('audio-play-button');
+
+beforeEach(() => {
+  audioMock.reset();
+});
+
+it('starts paused with the play control', async () => {
+  await renderControl();
+
+  expect(playButton().props.accessibilityLabel).toBe('Play audio');
+});
+
+it('plays when the control is tapped', async () => {
+  await renderControl();
+  const user = userEvent.setup();
+
+  await user.press(playButton());
+
+  expect(audioMock.player.play).toHaveBeenCalledTimes(1);
+  expect(audioMock.player.setActiveForLockScreen).toHaveBeenCalledWith(
+    true,
+    expect.objectContaining({ title: 'Creek' }),
+  );
+  expect(playButton().props.accessibilityLabel).toBe('Pause audio');
+});
+
+it('pauses when the control is tapped again', async () => {
+  await renderControl();
+  const user = userEvent.setup();
+
+  await user.press(playButton());
+  await user.press(playButton());
+
+  expect(audioMock.player.pause).toHaveBeenCalledTimes(1);
+  expect(audioMock.player.play).toHaveBeenCalledTimes(1);
+  expect(playButton().props.accessibilityLabel).toBe('Play audio');
+});
+
+it('keeps showing the playing state after recovering from a system pause', async () => {
+  await renderControl();
+  const user = userEvent.setup();
+
+  await user.press(playButton());
+  audioMock.player.play.mockClear();
+
+  // The system took audio focus away overnight.
+  await act(async () => {
+    audioMock.emit({ playing: false });
   });
 
-  it('renders PlayIcon when paused', () => {
-    jest.mock('expo-audio', () => ({
-      useAudioPlayer: jest.fn().mockReturnValue({
-        seekTo: jest.fn(),
-        setActiveForLockScreen: jest.fn(),
-        play: jest.fn(),
-        pause: jest.fn(),
-        loop: true,
-        position: 0,
-        duration: 10000,
-        playing: false,
-      }),
-      useAudioPlayerStatus: jest.fn().mockReturnValue({ playing: false }),
-      setAudioModeAsync: jest.fn(),
-    }));
-
-    const { container } = render(<AudioControl />);
-    expect(container.findByType(PlayIcon)).not.toBeNull();
-  });
-
-  it('renders PauseIcon when playing', () => {
-    jest.mock('expo-audio', () => ({
-      useAudioPlayer: jest.fn().mockReturnValue({
-        seekTo: jest.fn(),
-        setActiveForLockScreen: jest.fn(),
-        play: jest.fn(),
-        pause: jest.fn(),
-        loop: true,
-        position: 0,
-        duration: 10000,
-        playing: true,
-      }),
-      useAudioPlayerStatus: jest.fn().mockReturnValue({ playing: true }),
-      setAudioModeAsync: jest.fn(),
-    }));
-
-    const { container } = render(<AudioControl />);
-    expect(container.findByType(PauseIcon)).not.toBeNull();
-  });
-
-  it('updates ARIA label on state change', () => {
-    jest.mock('expo-audio', () => ({
-      useAudioPlayer: jest.fn().mockReturnValue({
-        seekTo: jest.fn(),
-        setActiveForLockScreen: jest.fn(),
-        play: jest.fn(),
-        pause: jest.fn(),
-        loop: true,
-        position: 0,
-        duration: 10000,
-        playing: false,
-      }),
-      useAudioPlayerStatus: jest.fn().mockReturnValue({ playing: false }),
-      setAudioModeAsync: jest.fn(),
-    }));
-
-    render(<AudioControl />);
-    const button = screen.getByRole('button');
-    expect(button.props.accessibilityLabel).toBe('Play track');
-  });
-
-  it('runs existing test suite without regressions', () => {
-    expect(true).toBe(true);
-  });
+  expect(audioMock.player.play).toHaveBeenCalledTimes(1);
+  expect(playButton().props.accessibilityLabel).toBe('Pause audio');
 });

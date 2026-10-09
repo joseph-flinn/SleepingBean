@@ -3,6 +3,7 @@ import {
   Pressable,
   StyleSheet,
   ViewStyle,
+  PressableProps,
   PressableStateCallbackType,
 } from 'react-native';
 
@@ -14,6 +15,9 @@ type IconButtonProps = {
   disabled?: boolean;
   style?: ViewStyle;
   activeOpacity?: number;
+  testID?: string;
+  accessibilityLabel?: string;
+  accessibilityRole?: PressableProps['accessibilityRole'];
 };
 
 export const IconButton = ({
@@ -24,6 +28,9 @@ export const IconButton = ({
   disabled = false,
   style,
   activeOpacity = 0.5,
+  testID,
+  accessibilityLabel,
+  accessibilityRole = 'button',
 }: IconButtonProps) => {
   return (
     <Pressable
@@ -36,7 +43,9 @@ export const IconButton = ({
         disabled && styles.disabled,
         style,
       ]}
-      accessibilityRole="button"
+      testID={testID}
+      accessibilityLabel={accessibilityLabel}
+      accessibilityRole={accessibilityRole}
     >
       {icon}
     </Pressable>

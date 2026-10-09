@@ -4,8 +4,9 @@ import { AudioControl } from './src/components/AudioControl';
 import { ThemeProvider, useTheme } from './src/ThemeContext';
 import { useThemedStyles } from './src/hooks/useThemedStyles';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import type { AppTheme } from './src/theme';
 
-const createStyles = (theme) =>
+const createStyles = (theme: AppTheme) =>
   StyleSheet.create({
     container: {
       flex: 1,
