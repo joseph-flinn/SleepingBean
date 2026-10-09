@@ -1,41 +1,52 @@
-import { View, Text, StyleSheet, useColorScheme } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { View, StyleSheet, useWindowDimensions } from 'react-native';
 import { IconButton } from '../components/IconButton';
 import { PlayIcon, PauseIcon } from '../components/AudioIcons';
+import { AppNameLogo } from '../components/AppNameLogo';
+import { useTheme } from '../ThemeContext';
 import { useSleepAudio } from '../hooks/useSleepAudio';
 
 export function AudioControl() {
   const { playing, toggle } = useSleepAudio();
-  const scheme = useColorScheme();
-  const insets = useSafeAreaInsets();
+  const { width, height } = useWindowDimensions();
+  const { theme } = useTheme();
+  const iconSize = width / 2;
 
-  const isDark = scheme === 'dark';
-  const textColor = isDark ? '#EAD2AC' : '#03110d';
-  const mutedTextColor = isDark ? 'rgba(234, 210, 172, 0.55)' : 'rgba(3, 17, 13, 0.55)';
-  const iconColor = isDark ? '#D8B589' : '#03110d';
-  const borderColor = isDark ? 'rgba(218, 181, 137, 0.35)' : 'rgba(3, 17, 13, 0.2)';
+  const iconColor = theme.colors.textMuted;
+  const logoColor = theme.colors.textSecondary;
 
   return (
-    <View style={[styles.container, { paddingBottom: insets.bottom + 16 }]}>
-      <View style={styles.row}>
-        <View style={styles.textContainer}>
-          <Text style={[styles.title, { color: textColor }]}>Sleep Audio</Text>
-          <Text style={[styles.subtitle, { color: mutedTextColor }]}>
-            {playing ? 'Playing' : 'Paused'}
-          </Text>
-        </View>
+    <View style={styles.container}>
+      <View
+        style={[
+          styles.card,
+          {
+            width: width * 0.95,
+            height: height * 0.95,
+            backgroundColor: theme.colors.card,
+            borderColor: theme.colors.border,
+          },
+        ]}
+      >
+        <AppNameLogo
+          width={width * 0.7}
+          color={logoColor}
+          style={styles.logo}
+        />
 
-        <View
-          style={[styles.buttonWrapper, { borderColor }]}
-        >
-          <IconButton
-            testID="audio-play-button"
-            onPress={toggle}
-            icon={playing ? <PauseIcon color={iconColor} /> : <PlayIcon color={iconColor} />}
-            accessibilityLabel={playing ? 'Pause audio' : 'Play audio'}
-            accessibilityRole="button"
-          />
-        </View>
+        <IconButton
+          testID="audio-play-button"
+          onPress={toggle}
+          size={iconSize}
+          icon={
+            playing ? (
+              <PauseIcon size={iconSize} color={iconColor} />
+            ) : (
+              <PlayIcon size={iconSize} color={iconColor} />
+            )
+          }
+          accessibilityLabel={playing ? 'Pause audio' : 'Play audio'}
+          accessibilityRole="button"
+        />
       </View>
     </View>
   );
@@ -45,34 +56,18 @@ export default AudioControl;
 
 const styles = StyleSheet.create({
   container: {
-    paddingHorizontal: 16,
-    paddingTop: 16,
-  },
-  row: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: 16,
-    borderRadius: 16,
-  },
-  textContainer: {
-    flex: 1,
-    paddingRight: 12,
-  },
-  title: {
-    fontSize: 18,
-    fontWeight: '600',
-    marginBottom: 4,
-  },
-  subtitle: {
-    fontSize: 13,
-  },
-  buttonWrapper: {
-    width: 52,
-    height: 52,
-    borderRadius: 26,
-    borderWidth: StyleSheet.hairlineWidth,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  card: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 24,
+    borderRadius: 16,
+    borderWidth: StyleSheet.hairlineWidth,
+  },
+  logo: {
+    position: 'absolute',
+    top: 32,
   },
 });

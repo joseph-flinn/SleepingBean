@@ -33,7 +33,6 @@ beforeEach(() => {
 it('starts paused with the play control', async () => {
   await renderControl();
 
-  expect(screen.getByText('Paused')).toBeTruthy();
   expect(playButton().props.accessibilityLabel).toBe('Play audio');
 });
 
@@ -48,7 +47,6 @@ it('plays when the control is tapped', async () => {
     true,
     expect.objectContaining({ title: 'Creek' }),
   );
-  expect(screen.getByText('Playing')).toBeTruthy();
   expect(playButton().props.accessibilityLabel).toBe('Pause audio');
 });
 
@@ -61,7 +59,6 @@ it('pauses when the control is tapped again', async () => {
 
   expect(audioMock.player.pause).toHaveBeenCalledTimes(1);
   expect(audioMock.player.play).toHaveBeenCalledTimes(1);
-  expect(screen.getByText('Paused')).toBeTruthy();
   expect(playButton().props.accessibilityLabel).toBe('Play audio');
 });
 
@@ -78,6 +75,5 @@ it('keeps showing the playing state after recovering from a system pause', async
   });
 
   expect(audioMock.player.play).toHaveBeenCalledTimes(1);
-  expect(screen.getByText('Playing')).toBeTruthy();
   expect(playButton().props.accessibilityLabel).toBe('Pause audio');
 });

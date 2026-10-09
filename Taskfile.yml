@@ -12,6 +12,16 @@ tasks:
       - docker compose up dev -d
       - sleep 2
       - docker compose exec -ti dev npm install
+      - docker compose exec -ti dev sh
+    silent: true
+
+
+  expo-start:
+    desc: Run the Expo Dev Server
+    cmds:
+      - docker compose up dev -d
+      - sleep 2
+      - docker compose exec -ti dev npm install
       - docker compose exec -ti dev npm start
     silent: true
 
